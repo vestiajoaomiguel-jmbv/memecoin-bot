@@ -4,6 +4,7 @@ import time
 import requests
 from collections import defaultdict
 from telegram import Bot
+import asyncio
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -149,7 +150,7 @@ def analyze_pair(pair):
         print("Erro:", e)
         return None
 
-def send_alert(token):
+async def send_alert(token):
     message = f"""
 🚨 MEMECOIN ALERTA
 
@@ -172,7 +173,7 @@ Score: {token['score']}/10
 https://dexscreener.com/solana/{token['address']}
 """
 
-    bot.send_message(chat_id=CHAT_ID, text=message)
+    await bot.send_message(chat_id=CHAT_ID, text=message)
 
 def run():
     print("Bot iniciado...")
@@ -190,7 +191,7 @@ def run():
                 address = token["address"]
 
                 if token["classification"] == "A+" and address not in seen_tokens:
-                    send_alert(token)
+                    asyncio.run (send_alert(token))
                     seen_tokens.add(address)
 
             time.sleep(60)
